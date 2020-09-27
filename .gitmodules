@@ -1,0 +1,3 @@
+[submodule "android-starter-kit"]
+	path = android-starter-kit
+	url = https://github.com/JSpiner/android-starter-kit.git
