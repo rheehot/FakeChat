@@ -2,14 +2,12 @@ package net.jspiner.fakechat.main.friend
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import net.jspiner.ask.ui.base.BaseFragment
 import net.jspiner.fakechat.R
 import net.jspiner.fakechat.databinding.FragmentFriendListBinding
-import net.jspiner.fakechat.main.friend.item.DividerItem
-import net.jspiner.fakechat.main.friend.item.FriendProfileItem
-import net.jspiner.fakechat.main.friend.item.MyProfileItem
-import kotlin.random.Random
+import net.jspiner.fakechat.repository.database.FakeChatDatabase
 
 class FriendListFragment : BaseFragment<FragmentFriendListBinding, FriendListViewModel>() {
 
@@ -17,7 +15,10 @@ class FriendListFragment : BaseFragment<FragmentFriendListBinding, FriendListVie
 
     override fun getLayoutId() = R.layout.fragment_friend_list
 
-    override fun createViewModel() = FriendListViewModel()
+    override fun createViewModel() = FriendListViewModel(
+            FakeChatDatabase.getInstance(context).myProfileDao(),
+            FakeChatDatabase.getInstance(context).profileDao()
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -25,15 +26,18 @@ class FriendListFragment : BaseFragment<FragmentFriendListBinding, FriendListVie
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = adapter
 
-        // TODO
-        adapter.addAll(
-                listOf(
-                        MyProfileItem("user1", "https://picsum.photos/200?seed=my", "존스미스", "내 프로필 입니다."),
-                        DividerItem("친구 128명")
-                ) + (0..100).map { id ->
-                    FriendProfileItem("user$id", "https://picsum.photos/200?seed=$id", "랜덤프로필$id", "랜덤")
-                }
-        )
+        observeViewModel()
 
+        viewModel.loadMyProfile()
+        viewModel.loadFriendList()
+    }
+
+    private fun observeViewModel() {
+        viewModel.myProfile.observe(viewLifecycleOwner, Observer { profile ->
+            adapter.updateMyProfile(profile)
+        })
+        viewModel.friendProfileList.observe(viewLifecycleOwner, Observer { list ->
+            adapter.updateFriendProfileList(list)
+        })
     }
 }

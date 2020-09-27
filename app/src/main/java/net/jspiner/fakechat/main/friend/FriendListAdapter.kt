@@ -15,9 +15,12 @@ import net.jspiner.fakechat.main.friend.viewHolder.MyProfileViewHolder
 
 class FriendListAdapter : BaseAdapter<ListItem>() {
 
+    private var myProfile = MyProfileItem.EMPTY
+    private var friendProfileList: List<FriendProfileItem> = emptyList()
+
     override fun onCreateViewHolderInternal(
-            parent: ViewGroup,
-            viewType: Int
+        parent: ViewGroup,
+        viewType: Int
     ): BaseViewHolder<out ViewDataBinding, ListItem> {
         @Suppress("UNCHECKED_CAST")
         return when (viewType) {
@@ -28,15 +31,35 @@ class FriendListAdapter : BaseAdapter<ListItem>() {
         } as BaseViewHolder<out ViewDataBinding, ListItem>
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder<ViewDataBinding, ListItem>, position: Int) {
+    override fun onBindViewHolder(
+        holder: BaseViewHolder<ViewDataBinding, ListItem>,
+        position: Int
+    ) {
         holder.setData(dataList[position])
     }
 
-    override fun getItemViewType(position: Int) = when(dataList[position]) {
+    override fun getItemViewType(position: Int) = when (dataList[position]) {
         is DividerItem -> VIEW_TYPE_DIVIDER
         is MyProfileItem -> VIEW_TYPE_MY_PROFILE
         is FriendProfileItem -> VIEW_TYPE_FRIEND_PROFILE
         else -> throw UnsupportedOperationException("")
+    }
+
+    fun updateMyProfile(profile: MyProfileItem) {
+        this.myProfile = profile
+        updateDisplayList()
+    }
+
+    fun updateFriendProfileList(list: List<FriendProfileItem>) {
+        this.friendProfileList = list
+        updateDisplayList()
+    }
+
+    private fun updateDisplayList() {
+        update(
+            listOf(myProfile, DividerItem("친구 ${friendProfileList.count()}")) +
+                    friendProfileList
+        )
     }
 
     companion object {
