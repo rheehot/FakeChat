@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import net.jspiner.ask.ui.base.BaseFragment
 import net.jspiner.fakechat.R
 import net.jspiner.fakechat.databinding.FragmentFriendListBinding
@@ -25,6 +26,14 @@ class FriendListFragment : BaseFragment<FragmentFriendListBinding, FriendListVie
 
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = adapter
+        binding.recyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                binding.toolbar.elevation = if(recyclerView.canScrollVertically(-1)) {
+                    50f
+                } else 0f
+            }
+        })
 
         observeViewModel()
 

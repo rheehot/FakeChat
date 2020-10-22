@@ -27,8 +27,6 @@ class MainActivity : BaseActivity<ActivityMainBinding, MainViewModel>() {
     }
 
     private fun initView() {
-        setSupportActionBar(binding.toolbar)
-
         binding.pager.adapter = MainPagerAdapter(supportFragmentManager)
         binding.tab.setupWithViewPager(binding.pager)
     }
